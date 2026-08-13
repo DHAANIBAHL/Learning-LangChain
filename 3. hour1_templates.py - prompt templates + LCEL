@@ -1,0 +1,23 @@
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.prompts import ChatPromptTemplate
+
+model = ChatGoogleGenerativeAI(model="gemini-3.5-flash")
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "You are a terse, no-fluff assistant. Answer in exactly {num_sentences} sentences."),
+    ("human", "{question}"),
+])
+
+chain = prompt | model
+
+response = chain.invoke({
+    "num_sentences": 3,
+    "question": "What's the difference between LangChain and LangGraph?",
+})
+
+if isinstance(response.content, str):
+    print(response.content)
+else:
+    for block in response.content:
+        if isinstance(block, dict) and block.get("type") == "text":
+            print(block["text"])
