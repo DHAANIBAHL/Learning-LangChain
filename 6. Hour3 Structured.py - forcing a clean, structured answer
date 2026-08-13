@@ -1,0 +1,17 @@
+from langchain_google_genai import ChatGoogleGenerativeAI
+from pydantic import BaseModel, Field
+
+class CountryInfo(BaseModel):
+    country: str = Field(description="The country name")
+    capital: str = Field(description="The capital city")
+    population_estimate: str = Field(description="Rough population, e.g. '125 million'")
+
+model = ChatGoogleGenerativeAI(model="gemini-3.5-flash")
+
+structured_model = model.with_structured_output(CountryInfo)
+
+result = structured_model.invoke("Tell me about Japan.")
+
+print(result)
+print(type(result))
+print(result.capital)
