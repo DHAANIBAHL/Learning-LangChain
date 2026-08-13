@@ -1,0 +1,10 @@
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
+embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+
+text = "LangChain is a framework for building applications powered by language models."
+
+vector = embeddings.embed_query(text)
+
+print("Vector length:", len(vector))
+print("First 10 numbers:", vector[:10])
