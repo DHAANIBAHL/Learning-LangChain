@@ -1,0 +1,31 @@
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+import numpy as np
+
+embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+
+chunks = [
+    "LangChain is a framework for building applications powered by language models.",
+    "It provides abstractions for chains, prompts, and tools. LangGraph extends",
+    "LangChain to support stateful, cyclical workflows. RAG, or Retrieval-Augmented",
+    "Generation, combines a language model with a search step over your own documents,",
+    "so the model can answer questions using information it was never trained on.",
+]
+
+question = "What does RAG mean?"
+
+chunk_vectors = embeddings.embed_documents(chunks)
+question_vector = embeddings.embed_query(question)
+
+def cosine_similarity(a, b):
+    a, b = np.array(a), np.array(b)
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+print(f"Question: {question}\n")
+scores = []
+for chunk, vec in zip(chunks, chunk_vectors):
+    score = cosine_similarity(question_vector, vec)
+    scores.append((score, chunk))
+
+scores.sort(reverse=True)
+for score, chunk in scores:
+    print(f"{score:.4f}  ->  {chunk}")
