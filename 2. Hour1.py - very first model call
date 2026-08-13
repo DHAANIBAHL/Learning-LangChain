@@ -1,0 +1,17 @@
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import SystemMessage, HumanMessage
+
+model = ChatGoogleGenerativeAI(model="gemini-3.5-flash")
+
+messages = [
+    SystemMessage(content="You are a terse, no-fluff assistant."),
+    HumanMessage(content="Explain what LCEL is in 2 sentences."),
+]
+
+for chunk in model.stream(messages):
+    if isinstance(chunk.content, str):
+        print(chunk.content, end="", flush=True)
+    else:
+        for block in chunk.content:
+            if isinstance(block, dict) and block.get("type") == "text":
+                print(block["text"], end="", flush=True)
