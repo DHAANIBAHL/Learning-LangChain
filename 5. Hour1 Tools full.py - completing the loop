@@ -1,0 +1,29 @@
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.tools import tool
+from langchain_core.messages import HumanMessage, ToolMessage
+
+@tool
+def get_capital(country: str) -> str:
+    """Returns the capital city of a given country."""
+    capitals = {"india": "New Delhi", "france": "Paris", "japan": "Tokyo"}
+    return capitals.get(country.lower(), "Unknown country")
+
+model = ChatGoogleGenerativeAI(model="gemini-3.5-flash")
+model_with_tools = model.bind_tools([get_capital])
+
+messages = [HumanMessage(content="What's the capital of Japan?")]
+response = model_with_tools.invoke(messages)
+messages.append(response)
+
+for call in response.tool_calls:
+    result = get_capital.invoke(call["args"])
+    messages.append(ToolMessage(content=result, tool_call_id=call["id"]))
+
+final_response = model_with_tools.invoke(messages)
+
+if isinstance(final_response.content, str):
+    print(final_response.content)
+else:
+    for block in final_response.content:
+        if isinstance(block, dict) and block.get("type") == "text":
+            print(block["text"])
