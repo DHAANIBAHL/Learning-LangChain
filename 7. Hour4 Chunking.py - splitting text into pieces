@@ -1,0 +1,21 @@
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+text = """
+LangChain is a framework for building applications powered by language models.
+It provides abstractions for chains, prompts, and tools. LangGraph extends
+LangChain to support stateful, cyclical workflows. RAG, or Retrieval-Augmented
+Generation, combines a language model with a search step over your own documents,
+so the model can answer questions using information it was never trained on.
+"""
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=100,
+    chunk_overlap=20,
+)
+
+chunks = splitter.split_text(text)
+
+for i, chunk in enumerate(chunks):
+    print(f"--- Chunk {i+1} ---")
+    print(chunk)
+    print()
